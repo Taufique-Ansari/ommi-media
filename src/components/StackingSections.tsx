@@ -1,6 +1,10 @@
 "use client";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type Panel = {
   tag: string;
@@ -57,32 +61,46 @@ const panels: Panel[] = [
 function Panel({
   panel,
   index,
-  totalPanels,
 }: {
   panel: Panel;
   index: number;
   totalPanels: number;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
-  
-  // Track this specific panel as its top edge goes from the bottom of the viewport to the top of the viewport
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // ── Framer Motion: card-level scale + rotate only (5 elements total — zero overhead) ──
   const { scrollYProgress } = useScroll({
     target: panelRef,
     offset: ["start end", "start start"],
   });
+  const rotate = useTransform(scrollYProgress, [0.2, 1], index === 0 ? [-2, 0] : [-3, 0]);
+  const scale = useTransform(scrollYProgress, [0.2, 3], index === 0 ? [0.96, 1] : [0.94, 1]);
 
-  // Entrance animations based on local scroll progress (0 to 1)
-  const rotate = useTransform(
-    scrollYProgress,
-    [0.2, 1], // Start animating when it's 20% into the viewport
-    index === 0 ? [-2, 0] : [-3, 0],
-  );
-  
-  const scale = useTransform(
-    scrollYProgress,
-    [0.2, 3],
-    index === 0 ? [0.96, 1] : [0.94, 1],
-  );
+  // ── GSAP ScrollTrigger: all text/image content animations ──
+  // GSAP operates directly on the DOM — no React re-renders, single RAF loop.
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: panelRef.current,
+          start: "top 60%",
+          toggleActions: "play none none reverse",
+        },
+        defaults: { ease: "power2.out" },
+      });
+
+      // Stagger block elements in — tag, title, image, line, caption as single GPU layers
+      tl.from("[data-gsap='tag']",   { y: 22, opacity: 0, duration: 0.45 }, 0)
+        .from("[data-gsap='body-word']", { y: "105%", duration: 0.4, stagger: 0.025, ease: "power2.out" }, 0.1)
+        .from("[data-gsap='title']", { y: 30, opacity: 0, duration: 0.5  }, 0.18)
+        .from("[data-gsap='image']", { clipPath: "inset(100% 0 0 0)", duration: 0.85, ease: "power2.inOut" }, 0.05)
+        .from("[data-gsap='line']",  { scaleY: 0, transformOrigin: "top center", duration: 0.6 }, 0)
+        .from("[data-gsap='caption']", { y: "110%", duration: 0.5 }, 0.5);
+    }, contentRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <div
@@ -91,134 +109,139 @@ function Panel({
       style={{ zIndex: index + 1 }}
     >
       <motion.div
-        style={{
-          rotate,
-          scale,
-          background: panel.bg,
-          color: panel.fg,
-        }}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: index === totalPanels - 1 ? 0.6 : 0.85 }}
-        variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              staggerChildren: 0.15,
-            }
-          }
-        }}
-        className="relative flex h-full w-full flex-col justify-between overflow-hidden rounded-[20px] sm:rounded-[28px] p-5 sm:p-8 md:p-14 shadow-2xl"
+        ref={contentRef}
+        style={{ rotate, scale, background: panel.bg, color: panel.fg }}
+        className="relative flex h-full w-full overflow-hidden rounded-[20px] sm:rounded-[28px] shadow-2xl"
       >
-        {/* Top section: tag + body */}
-        <div className="max-w-2xl z-10 flex flex-col gap-4 sm:gap-6">
-          <div className="text-xs uppercase tracking-[0.3em]">
-            <span className="sr-only">{panel.tag}</span>
-            <motion.span 
-              aria-hidden="true" 
-              className="flex flex-wrap gap-x-[0.3em]"
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.04 } }
-              }}
-            >
-              {panel.tag.split(" ").map((word, idx) => (
-                <motion.span
-                  key={idx}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 0.7, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
-                  }}
-                  className="inline-block"
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </motion.span>
-          </div>
-          
-          <div className="text-base sm:text-base leading-relaxed md:text-lg">
-            <span className="sr-only">{panel.body}</span>
-            <motion.span 
-              aria-hidden="true" 
-              className="flex flex-wrap gap-x-[0.25em] gap-y-[0.1em]"
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.02 } }
-              }}
-            >
-              {panel.body.split(" ").map((word, idx) => (
-                <motion.span
-                  key={idx}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 0.9, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
-                  }}
-                  className="inline-block"
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </motion.span>
-          </div>
-        </div>
-        
-        {/* Title */}
-        <h3 className="font-display text-[clamp(1.8rem,5vw,5rem)] font-bold leading-[1.1] tracking-tighter max-w-4xl z-10">
-          <span className="sr-only">{panel.title}</span>
-          <motion.span 
-            aria-hidden="true" 
-            className="flex flex-wrap gap-x-[0.25em]"
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.08 } }
-            }}
+        {/* ── MOBILE LAYOUT (< md) ── */}
+        <div className="md:hidden flex flex-col justify-between w-full p-5 sm:p-8">
+          {/* Tag */}
+          <div
+            data-gsap="tag"
+            className="text-base sm:text-lg uppercase tracking-[0.25em] opacity-70"
           >
-            {panel.title.split(" ").map((word, idx) => (
-              <motion.span
-                key={idx}
-                variants={{
-                  hidden: { opacity: 0, y: 40 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
-                }}
-                className="inline-block"
-              >
-                {word}
-              </motion.span>
+            {panel.tag}
+          </div>
+          {/* horizontal Line */}
+          <hr className="border-t border-gray-300 opacity-70 w-full animate-slow-line" />
+          {/* Body */}
+          <div className="text-lg sm:text-2xl leading-[1.4] opacity-80 my-4 flex flex-wrap gap-x-[0.3em]">
+            {panel.body.split(" ").map((word, i) => (
+              <span key={i} className="inline-block overflow-hidden">
+                <span data-gsap="body-word" className="inline-block">{word}</span>
+              </span>
             ))}
-          </motion.span>
-        </h3>
+          </div>
 
-        {/* Mobile image - at the bottom, natural aspect ratio, small screens only */}
-        {panel.image && (
-          <motion.div 
-            className="md:hidden w-full overflow-hidden rounded-xl shadow-lg z-10"
-            variants={{
-              hidden: { clipPath: "inset(0 0 100% 0)", scale: 1.05 },
-              visible: { clipPath: "inset(0 0 0% 0)", scale: 1, transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.2 } }
-            }}
+          {/* Title */}
+          <h3
+            data-gsap="title"
+            className="font-display text-[clamp(2rem,8vw,3.5rem)] font-bold leading-[0.95] tracking-tighter"
           >
-            <img src={panel.image} alt={panel.tag} className="w-full h-auto object-contain" />
-          </motion.div>
-        )}
+            {panel.title}
+          </h3>
 
-        {/* Desktop image - absolute positioned, hidden on small screens */}
-        {panel.image && (
-          <motion.div 
-            className="hidden md:block absolute right-20 bottom-[25vh] h-[50vh] w-[20vw] overflow-hidden rounded-2xl shadow-2xl opacity-90"
-            variants={{
-              hidden: { clipPath: "inset(0 0 100% 0)", scale: 1.05 },
-              visible: { clipPath: "inset(0 0 0% 0)", scale: 1, transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.2 } }
-            }}
-          >
-            <img src={panel.image} alt={panel.tag} className="h-full w-full object-cover" />
-          </motion.div>
-        )}
+          {/* Mobile image */}
+          {panel.image && (
+            <div
+              data-gsap="image"
+              className="mt-4 w-full overflow-hidden rounded-xl shadow-lg"
+              style={{ clipPath: "inset(0 0 0 0)" }}
+            >
+              <img src={panel.image} alt={panel.tag} className="w-full h-auto" />
+            </div>
+          )}
+        </div>
+
+        {/* ── DESKTOP LAYOUT (≥ md) ── */}
+        <div className="hidden md:flex w-full h-full">
+
+          {/* LEFT SIDE */}
+          <div className="flex flex-col justify-between w-1/2 h-full p-14">
+
+            {/* Top: number + separator + body */}
+            <div className="flex items-start gap-6">
+              {/* Number */}
+              <div className="overflow-hidden flex-shrink-0 pt-1">
+                <span
+                  data-gsap="tag"
+                  className="block font-mono lg:text-[34px] text-xl tracking-widest opacity-50"
+                >
+                  {panel.tag.split("—")[0].trim()}
+                </span>
+              </div>
+
+              {/* Vertical separator */}
+              <div
+                data-gsap="line"
+                className="w-px flex-shrink-0 mt-1 self-stretch opacity-30"
+                style={{ backgroundColor: "currentColor" }}
+              />
+
+              {/* Body text */}
+              <p className="text-lg lg:text-[34px] leading-[34px] opacity-75 max-w-2xl flex flex-wrap gap-x-[0.3em]">
+                {panel.body.split(" ").map((word, i) => (
+                  <span key={i} className="inline-block overflow-hidden">
+                    <span data-gsap="body-word" className="inline-block">{word}</span>
+                  </span>
+                ))}
+              </p>
+            </div>
+
+            {/* Bottom: title */}
+            <div className="flex flex-col gap-5">
+              <h3
+                data-gsap="title"
+                className="font-display text-[clamp(2.5rem,5.5vw,6rem)] font-bold leading-[0.9] tracking-tighter"
+              >
+                {panel.title}
+              </h3>
+
+              {/* Title underline */}
+              <div
+                className="h-px w-full opacity-20"
+                style={{ backgroundColor: "currentColor" }}
+              />
+            </div>
+          </div>
+
+          {/* RIGHT SIDE — image with caption */}
+          {panel.image && (
+            <div className="relative w-1/2 h-full flex items-center justify-center p-10">
+              {/* Vertical line decoration */}
+              <div
+                data-gsap="line"
+                className="absolute left-0 top-10 bottom-10 w-px opacity-20"
+                style={{ backgroundColor: "currentColor" }}
+              />
+
+              {/* Image */}
+              <div
+                data-gsap="image"
+                className="relative h-full w-full max-h-[75%] overflow-hidden rounded-2xl shadow-2xl"
+                style={{ clipPath: "inset(0 0 0 0)" }}
+              >
+                <img src={panel.image} alt={panel.tag} className="h-full w-full object-cover" />
+              </div>
+
+              {/* Caption label */}
+              <div className="absolute bottom-10 left-10 right-10 overflow-hidden">
+                <p
+                  data-gsap="caption"
+                  className="text-xs tracking-[0.2em] uppercase opacity-50"
+                >
+                  ( {panel.tag.split("—")[1]?.trim() ?? panel.tag} )
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </motion.div>
     </div>
   );
 }
 
+// ── Typewriter: pure setInterval, no framer-motion, zero render overhead ──
 function TypeWriter({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -237,11 +260,7 @@ function TypeWriter({ text, className }: { text: string; className?: string }) {
         i++;
         setDisplayed(text.slice(0, i));
         if (i >= text.length) {
-          // Pause at full text, then erase
-          timeout = setTimeout(() => {
-            typing = false;
-            tick();
-          }, 1500);
+          timeout = setTimeout(() => { typing = false; tick(); }, 1500);
           return;
         }
         timeout = setTimeout(tick, 70);
@@ -249,11 +268,7 @@ function TypeWriter({ text, className }: { text: string; className?: string }) {
         i--;
         setDisplayed(text.slice(0, i));
         if (i <= 0) {
-          // Pause at empty, then type again
-          timeout = setTimeout(() => {
-            typing = true;
-            tick();
-          }, 500);
+          timeout = setTimeout(() => { typing = true; tick(); }, 500);
           return;
         }
         timeout = setTimeout(tick, 40);
@@ -262,15 +277,9 @@ function TypeWriter({ text, className }: { text: string; className?: string }) {
 
     tick();
 
-    // Blink the cursor independently
-    const blinkInterval = setInterval(() => {
-      setCursorVisible((v) => !v);
-    }, 530);
+    const blinkInterval = setInterval(() => setCursorVisible((v) => !v), 530);
 
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(blinkInterval);
-    };
+    return () => { clearTimeout(timeout); clearInterval(blinkInterval); };
   }, [isInView, text]);
 
   return (

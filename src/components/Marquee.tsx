@@ -4,6 +4,18 @@ const brands = [
   "Content Flow",
   "Akima Films",
   "Ritesh Agarwal",
+  "Attention compound",
+  "Content Flow",
+  "Akima Films",
+  "Ritesh Agarwal",
+  "Attention compound",
+  "Content Flow",
+  "Akima Films",
+  "Ritesh Agarwal",
+  "Attention compound",
+  "Content Flow",
+  "Akima Films",
+  "Ritesh Agarwal",
 ];
 
 import { motion } from "framer-motion";
@@ -30,11 +42,11 @@ export function Marquee() {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="overflow-hidden"
       >
-        <div className="marquee-track flex items-center gap-8 sm:gap-16 px-4 sm:px-8 text-xl sm:text-2xl font-medium tracking-tighter md:text-4xl group">
+        <div className="marquee-track infinite h-full flex items-center gap-8 sm:gap-16 px-4 sm:px-8 text-xl sm:text-2xl font-medium tracking-tighter md:text-4xl group">
           {[...brands, ...brands].map((b, i) => (
             <span
               key={i}
-              className="whitespace-nowrap text-foreground/50 transition-all duration-300 hover:!text-foreground hover:!opacity-100 group-hover:opacity-30 hover:scale-110 cursor-default"
+              className="whitespace-nowrap text-foreground/50 transition-all duration-300 hover:!text-foreground hover:!opacity-100 group-hover:opacity-30 hover:scale-110 cursor-default h-full py-2"
             >
               {b}
             </span>

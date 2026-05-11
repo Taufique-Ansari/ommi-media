@@ -108,7 +108,7 @@ export function Navbar() {
         </LiquidGlassContainer>
 
         <div className="flex items-center gap-3">
-          <a href="https://calendly.com/ommimedia-in/30min" className="hidden sm:block" onClick={(e) => handleLinkClick(e, 'contact')}>
+          <a href="https://calendly.com/ommimedia-in/30min" className="hidden sm:block" >
             <GlassButton className="px-5 py-3 font-medium transition-transform">
               Book a Call
             </GlassButton>
