@@ -1,0 +1,47 @@
+Ommi Media Website Content
+
+HEADER:
+Main text: CONTENT THAT BUILDS YOUR AUTHORITY. (Bold capital letters, character spacing: -20)
+Subtext: From script to post — we build the content engine that turns founders into the face of their industry. (Font: SF pro medium, character spacing: -30)
+Add a button below subtext: Book a strategy call →
+Add this link: Calendly
+For Available for new projects change the grey dot with green dot
+Remove the grid completely. Plain white background.
+
+For Trusted by Section
+Add names: Attention compound, Content Flow, Akima Films, Ritesh Agarwal (SF Pro medium font with -30 character spacing)
+Remove latest work text and directly show videos
+What we do section: 
+Main Text: WHAT YOU GET WHEN STRATEGY MEETS EXECUTION
+Subtext: Most founders have something worth saying. They just don't have the system to say it consistently, clearly, and on every platform that matters. That's exactly what we build.
+Sections:
+01 — Content Research
+We don't guess what works.
+Before a single word is written, we study your niche, your competitors, and what your audience is already responding to. Every piece of content starts with a reason to exist.
+Image:section1.jpg
+
+02 — Scripting
+Your voice. Our structure.
+We write scripts that sound like you on your best day — clear, confident, and built to hold attention past the first three seconds. No filler, no fluff.
+Image:section2.jpg
+
+03 — Editing
+Where good footage becomes content people finish.
+Pacing, cuts, captions, sound design — every edit is crafted to stop the scroll and keep the watch time climbing.
+Image:section3.jpg
+
+04 — Posting & Scheduling
+Consistency is the strategy.
+We handle publishing across platforms at the right times so your content works even when you're not. You stay present without being glued to your phone.
+Image: section4.jpg
+
+05 — SEO Optimisation
+Built to be found, not just seen.
+Titles, descriptions, hashtags, and metadata — optimised so your content keeps pulling in views long after the upload day.
+Image:section5.jpg
+
+Colour code for each section:
+
+Add Instagram page link: Instagram
+Remove all other socials. 
+Keep email: ommimedia.in@gmail.com
