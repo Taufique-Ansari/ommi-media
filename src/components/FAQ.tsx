@@ -29,7 +29,7 @@ const faqs = [
 export function FAQ() {
   return (
     <section id="faqs" className="bg-background vertical-lines py-16 sm:py-28 border-b border-border">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 relative z-10">
+      <div className="site-container relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

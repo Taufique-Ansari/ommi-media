@@ -1,5 +1,5 @@
 "use client";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -67,50 +67,64 @@ function Panel({
   totalPanels: number;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  // ── Framer Motion: card-level scale + rotate only (5 elements total — zero overhead) ──
-  const { scrollYProgress } = useScroll({
-    target: panelRef,
-    offset: ["start end", "start start"],
-  });
-  const rotate = useTransform(scrollYProgress, [0.2, 1], index === 0 ? [-2, 0] : [-3, 0]);
-  const scale = useTransform(scrollYProgress, [0.2, 3], index === 0 ? [0.96, 1] : [0.94, 1]);
-
-  // ── GSAP ScrollTrigger: all text/image content animations ──
-  // GSAP operates directly on the DOM — no React re-renders, single RAF loop.
+  // ── GSAP: all animations in one context, one RAF loop ──
   useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
     const ctx = gsap.context(() => {
+      // Card entrance: scrub-linked rotate + scale
+      // scrub: 0.5 = smooth 500ms lag behind scroll for organic feel
+      gsap.set(card, {
+        rotate: index === 0 ? -2 : -3,
+        scale: index === 0 ? 0.96 : 0.94,
+        willChange: "transform",  // pre-allocate GPU compositor layer
+        z: 0,                     // force hardware acceleration
+      });
+      gsap.to(card, {
+        rotate: 0,
+        scale: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: panelRef.current,
+          start: "top bottom",  // start as soon as card enters viewport
+          end: "top 20%",       // finish before card is fully in position
+          scrub: 0.5,           // butter-smooth, tied directly to scroll speed
+        },
+      });
+
+      // Content reveal: trigger-based stagger timeline
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: panelRef.current,
-          start: "top 60%",
+          start: "top 65%",
           toggleActions: "play none none reverse",
         },
         defaults: { ease: "power2.out" },
       });
 
-      // Stagger block elements in — tag, title, image, line, caption as single GPU layers
-      tl.from("[data-gsap='tag']",   { y: 22, opacity: 0, duration: 0.45 }, 0)
-        .from("[data-gsap='body-word']", { y: "105%", duration: 0.4, stagger: 0.025, ease: "power2.out" }, 0.1)
-        .from("[data-gsap='title']", { y: 30, opacity: 0, duration: 0.5  }, 0.18)
-        .from("[data-gsap='image']", { clipPath: "inset(100% 0 0 0)", duration: 0.85, ease: "power2.inOut" }, 0.05)
-        .from("[data-gsap='line']",  { scaleY: 0, transformOrigin: "top center", duration: 0.6 }, 0)
-        .from("[data-gsap='caption']", { y: "110%", duration: 0.5 }, 0.5);
-    }, contentRef);
+      tl.from("[data-gsap='tag']",   { y: 22, opacity: 0, duration: 0.4 }, 0)
+        .from("[data-gsap='body-word']", { y: "105%", duration: 0.35, stagger: 0.02 }, 0.08)
+        .from("[data-gsap='title']", { y: 28, opacity: 0, duration: 0.45 }, 0.16)
+        .from("[data-gsap='image']", { clipPath: "inset(100% 0 0 0)", duration: 0.8, ease: "power2.inOut" }, 0.04)
+        .from("[data-gsap='line']",  { scaleY: 0, transformOrigin: "top center", duration: 0.55 }, 0)
+        .from("[data-gsap='caption']", { y: "110%", duration: 0.45 }, 0.45);
+    }, panelRef); // scope to panelRef — selectors only match within this panel
 
     return () => ctx.revert();
-  }, []);
+  }, [index]);
 
   return (
     <div
       ref={panelRef}
-      className="sticky top-16 sm:top-0 flex h-[80vh] sm:h-screen w-full items-stretch justify-center px-3 sm:px-4 md:px-8 py-4 sm:py-8 md:py-12"
+      className="sticky top-16 sm:top-0 flex h-[80vh] sm:h-screen w-full items-stretch justify-center px-3 sm:px-4 md:px-8 py-4 sm:py-8 md:py-12 max-w-[2080px] mx-auto"
       style={{ zIndex: index + 1 }}
     >
-      <motion.div
-        ref={contentRef}
-        style={{ rotate, scale, background: panel.bg, color: panel.fg }}
+      <div
+        ref={cardRef}
+        style={{ background: panel.bg, color: panel.fg }}
         className="relative flex h-full w-full overflow-hidden rounded-[20px] sm:rounded-[28px] shadow-2xl"
       >
         {/* ── MOBILE LAYOUT (< md) ── */}
@@ -121,11 +135,12 @@ function Panel({
             className="text-base sm:text-lg uppercase tracking-[0.25em] opacity-70"
           >
             {panel.tag}
+            {/* horizontal Line */}
+            <hr className="border-t border-gray-300 opacity-70 w-full animate-slow-line mt-2" />
           </div>
-          {/* horizontal Line */}
-          <hr className="border-t border-gray-300 opacity-70 w-full animate-slow-line" />
+          
           {/* Body */}
-          <div className="text-lg sm:text-2xl leading-[1.4] opacity-80 my-4 flex flex-wrap gap-x-[0.3em]">
+          <div className="text-lg sm:text-2xl leading-[1.2] opacity-80 my-4 flex flex-wrap gap-x-[0.3em]">
             {panel.body.split(" ").map((word, i) => (
               <span key={i} className="inline-block overflow-hidden">
                 <span data-gsap="body-word" className="inline-block">{word}</span>
@@ -145,7 +160,7 @@ function Panel({
           {panel.image && (
             <div
               data-gsap="image"
-              className="mt-4 w-full overflow-hidden rounded-xl shadow-lg"
+              className="mt-4 w-full overflow-hidden  shadow-lg"
               style={{ clipPath: "inset(0 0 0 0)" }}
             >
               <img src={panel.image} alt={panel.tag} className="w-full h-auto" />
@@ -218,10 +233,10 @@ function Panel({
               {/* Image */}
               <div
                 data-gsap="image"
-                className="relative h-full w-full max-h-[75%] overflow-hidden rounded-2xl shadow-2xl"
+                className="relative h-full w-full max-h-[75%] overflow-hidden shadow-2xl"
                 style={{ clipPath: "inset(0 0 0 0)" }}
               >
-                <img src={panel.image} alt={panel.tag} className="h-full w-full object-cover" />
+                <img src={panel.image} alt={panel.tag} className="h-full w-auto" />
               </div>
 
               {/* Caption label */}
@@ -236,7 +251,7 @@ function Panel({
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -300,7 +315,7 @@ function TypeWriter({ text, className }: { text: string; className?: string }) {
 export function StackingSections() {
   return (
     <section id="about" className="relative bg-background vertical-lines border-t border-border">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 pb-12 sm:pb-20 pt-20 sm:pt-28 text-center relative z-10">
+      <div className="site-container pb-12 sm:pb-20 pt-20 sm:pt-28 text-center relative z-10">
         <h2 className="font-display-lc uppercase text-[clamp(3rem,10vw,6rem)] font-bold leading-[0.85] tracking-tight drop-shadow-sm text-foreground">
           WHAT YOU GET WHEN STRATEGY
           <br />

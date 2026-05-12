@@ -5,13 +5,13 @@ export function CTA() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-foreground px-4 sm:px-6 py-20 sm:py-32 text-background"
+      className="relative overflow-hidden bg-foreground py-20 sm:py-32 text-background"
     >
       <div className="pointer-events-none absolute inset-0 opacity-30">
         <div className="absolute -left-20 top-10 h-72 w-[60%] rotate-[-8deg] bg-gradient-to-r from-fuchsia-400 to-violet-400 blur-2xl" />
         <div className="absolute -right-20 bottom-10 h-72 w-[60%] rotate-[6deg] bg-gradient-to-r from-emerald-300 to-cyan-400 blur-2xl" />
       </div>
-      <div className="relative z-10 mx-auto max-w-4xl text-center">
+      <div className="site-container relative z-10 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -40,7 +40,7 @@ export function CTA() {
 export function Footer() {
   return (
     <footer className="fixed bottom-0 left-0 w-full h-[40vh] sm:h-[60vh] bg-background py-6 sm:py-10 flex flex-col justify-end">
-      <div className="mx-auto max-w-7xl px-6 w-full">
+      <div className="site-container w-full">
         <h3 className="font-display sm:text-[clamp(3rem,18vw,13rem)] text-[clamp(3rem,10vw,10rem)] font-extrabold leading-none tracking-tighter text-foreground text-center sm:text-left drop-shadow-sm">
           OMMIMEDIA
         </h3>

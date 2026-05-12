@@ -186,3 +186,30 @@
   -webkit-text-stroke: 1.5px currentColor;
   color: transparent;
 }
+
+/* ---------- Site-wide layout container ---------- */
+/* Use .site-container on the inner wrapper of every section.  */
+/* Keeps content aligned within a consistent 1400px max-width  */
+/* with responsive padding: 16px (mobile) → 32px (sm) → 64px (lg+) */
+.site-container {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;       /* 16px */
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .site-container {
+    padding-left: 2rem;     /* 32px */
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-container {
+    padding-left: 4rem;     /* 64px */
+    padding-right: 4rem;
+  }
+}

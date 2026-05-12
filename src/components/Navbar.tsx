@@ -71,7 +71,7 @@ export function Navbar() {
       {/* Mobile gradient backdrop */}
       <div className="md:hidden absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none" />
 
-      <div className="relative max-w-[1280px] mx-auto mt-6 flex items-center justify-between text-[15px] px-4">
+      <div className="site-container relative mt-6 flex items-center justify-between text-[15px]">
         <a
           href="#top"
           className="flex items-center gap-2 pl-2 font-semibold tracking-tight"

@@ -5,10 +5,10 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-[100vh] items-center justify-center overflow-hidden px-4 sm:px-6 sm:pt-32"
+      className="relative flex min-h-[100vh] items-center justify-center overflow-hidden"
     >
       <div className="absolute inset-0 grid-bg" />
-      <div className="relative z-10 mx-auto max-w-5xl text-center">
+      <div className="site-container relative z-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
