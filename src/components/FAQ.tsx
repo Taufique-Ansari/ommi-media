@@ -9,20 +9,28 @@ import { motion } from "framer-motion";
 
 const faqs = [
   {
-    q: "Are you an agency or a freelancer?",
-    a: "We're a small, senior-led studio. You'll work directly with the people building your project — no account managers, no hand-offs.",
+    q: "So… are you a video editing service or something more?",
+    a: "Honestly? We're way more. Most agencies hand you back an edited file and call it a day. At Ommi Media, we run your entire content system — from scripting your ideas into scroll-stopping stories, to editing, optimising, and posting. You show up, we handle the rest. Think of us less like a vendor and more like your content team that actually gets it.",
   },
   {
-    q: "Why not hire an in-house editor?",
-    a: "Working with us gets you a multidisciplinary team — strategy, design and engineering — for less than a single senior hire.",
+    q: "I've tried content agencies before and it felt generic. Why will this be different?",
+    a: "Because we don't treat your brand like a template. We study how your audience thinks, what makes them stop scrolling, and what makes them trust you — then we build content around that. No recycled formats, no cookie-cutter carousels. Every piece of content we make is built to sound like you, only sharper.",
   },
   {
-    q: "What types of videos do you specialize in?",
-    a: "Brand films, product launches, founder stories, and short-form social cuts optimized per channel.",
+    q: "I'm a coach/consultant — I sell expertise, not products. Can content actually grow my business?",
+    a: "That's exactly who we built this for. When you're selling knowledge and credibility, content isn't optional — it's your storefront. We turn your ideas, frameworks, and opinions into content that positions you as the obvious expert in your space. The right post can do more selling than a cold pitch ever will.",
   },
   {
-    q: "Can you help with video strategy?",
-    a: "Yes. Strategy is where we start: positioning, messaging, distribution and measurable goals before a single frame is shot.",
+    q: "We're a small startup — is content even a priority right now?",
+    a: "Especially now. The brands that win aren't always the ones with the biggest budgets — they're the ones that show up consistently and build trust early. We help startups and personal brands punch above their weight by creating content that makes you look established, sound credible, and feel familiar to your audience — long before you have a massive following. Early content is how you build the audience that funds the next phase.",
+  },
+  {
+    q: "How involved do I need to be in the process?",
+    a: "As little or as much as you want. Most of our clients are busy founders and creators who don't have time to micromanage content. We handle the heavy lifting — strategy, scripting, editing, posting — and check in with you at the right moments. You stay in control without being in the weeds.",
+  },
+  {
+    q: "What's the actual goal here — views or business results?",
+    a: "Both, but in the right order. Views without strategy is just vanity. We build content that grows your audience and moves them toward trusting you, booking you, or buying from you. Every content decision we make is tied back to one question: does this help your brand grow in a way that actually matters?",
   },
 ];
 

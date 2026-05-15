@@ -1,139 +1,253 @@
 "use client";
-import React from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectCoverflow, Pagination, Navigation } from "swiper/modules";
-import { SparklesIcon } from "lucide-react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { motion } from "framer-motion";
 
 import "swiper/css";
-import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-import { Badge } from "@/components/ui/badge";
+interface CarouselItem {
+  src: string;
+  poster?: string;
+  alt: string;
+}
 
 interface CarouselProps {
-  items?: { src: string; alt: string; type?: "image" | "video" }[];
+  items?: CarouselItem[];
   autoplayDelay?: number;
   showPagination?: boolean;
   showNavigation?: boolean;
 }
 
-const defaultImages = [
-  { src: "https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?w=900&q=80", alt: "Brand Films", type: "image" as const },
-  { src: "https://images.unsplash.com/photo-1517059224940-d4af9eec41b7?w=900&q=80", alt: "Editorial", type: "image" as const },
-  { src: "https://images.unsplash.com/photo-1492724724894-7464c27d0ceb?w=900&q=80", alt: "Campaigns", type: "image" as const },
-  { src: "https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?w=900&q=80", alt: "Product", type: "image" as const },
-  { src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80", alt: "Spaces", type: "image" as const },
+const defaultItems: CarouselItem[] = [
+  {
+    src: "https://res.cloudinary.com/dtvwoycjx/video/upload/v1778844041/Rock_g6362s.mp4",
+    poster: "https://res.cloudinary.com/dtvwoycjx/video/upload/so_auto,w_400/v1778844041/Rock_g6362s.jpg",
+    alt: "Rock Video",
+  },
+  {
+    src: "https://res.cloudinary.com/dtvwoycjx/video/upload/v1778844029/KitKat_lnftjp.mp4",
+    poster: "https://res.cloudinary.com/dtvwoycjx/video/upload/so_auto,w_400/v1778844029/KitKat_lnftjp.jpg",
+    alt: "KitKat Video",
+  },
+  {
+    src: "https://res.cloudinary.com/dtvwoycjx/video/upload/v1778844025/S5_oj98vx.mp4",
+    poster: "https://res.cloudinary.com/dtvwoycjx/video/upload/so_auto,w_400/v1778844025/S5_oj98vx.jpg",
+    alt: "S5 Video",
+  },
 ];
 
-// Duplicate default images to prevent Swiper loop warnings (20 items total for ultra-widescreen safety)
-const defaultCarouselImages = [...defaultImages, ...defaultImages, ...defaultImages, ...defaultImages];
-
-// Helper to extract direct video link from Google Drive
-function getGoogleDriveDirectLink(url: string) {
-  if (!url) return url;
-  const driveRegex = /(?:drive\.google\.com\/file\/d\/|drive\.google\.com\/open\?id=)([^/&?]+)/;
-  const match = url.match(driveRegex);
-  if (match && match[1]) {
-    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-  }
-  return url;
+function getVideoPoster(videoSrc: string): string {
+  const transformed = videoSrc
+    .replace('/video/upload/', '/video/upload/so_auto,w_400/')
+    .replace('.mp4', '.jpg');
+  return transformed;
 }
 
-// Duplicate default images to prevent Swiper loop warnings (20 items total for ultra-widescreen safety)
-// const defaultCarouselImages = [...defaultImages, ...defaultImages, ...defaultImages, ...defaultImages];
-
-import { motion } from "framer-motion";
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const CardCarousel: React.FC<CarouselProps> = ({
-  items = defaultCarouselImages,
-  autoplayDelay = 1500,
+  items        = defaultItems,
+  autoplayDelay = 5000,
   showPagination = true,
   showNavigation = true,
 }) => {
+  /**
+   * Swiper loop needs: total slides > slidesPerView × 2.
+   * With slidesPerView="auto" showing ~3 cards at once, duplicate until we
+   * have at least 12 slides so there is always content on both sides.
+   */
+  const minSlides = 12;
+  const times     = Math.ceil(minSlides / items.length);
+  const loopItems = Array.from({ length: times }, () => items).flat();
+  const swiperRef = useRef<any>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const slideNext = useCallback(() => {
+    swiperRef.current?.slideNext();
+  }, []);
+
+  const toggleMute = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMuted(prev => !prev);
+  }, []);
+
   const css = `
-  .swiper { width: 100%; padding-bottom: 50px; }
-  .swiper-slide {
-    background-position: center;
-    background-size: cover;
-    width: 280px;
-    border-radius: 24px;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-  }
-  @media (min-width: 640px) {
-    .swiper-slide { width: 350px; }
-  }
-  .swiper-slide:not(.swiper-slide-active) {
-    opacity: 0.6;
-  }
-  .swiper-slide img { display: block; width: 100%; border-radius: 24px; }
-  .swiper-3d .swiper-slide-shadow-left { background-image: none; }
-  .swiper-3d .swiper-slide-shadow-right { background: none; }
-  .swiper-pagination-bullet { background: var(--foreground); opacity: 0.3; transition: all 0.2s ease; }
-  .swiper-pagination-bullet-active { opacity: 1; transform: scale(1.2); }
+    /* ── Shell ── */
+    .work-swiper               { width: 100%; padding-bottom: 52px; }
+
+    /* ── All slides: dimmed + scaled ── */
+    .work-swiper .swiper-slide {
+      width: 260px;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity  0.5s ease;
+      opacity:   0.45;
+      transform: scale(0.88);
+      will-change: transform, opacity;
+    }
+
+    @media (min-width: 640px)  { .work-swiper .swiper-slide { width: 300px; } }
+    @media (min-width: 1024px) { .work-swiper .swiper-slide { width: 340px; } }
+
+    /* ── Active (centre) slide ── */
+    .work-swiper .swiper-slide-active {
+      opacity:   1;
+      transform: scale(1);
+      z-index:   2;
+    }
+
+    /* ── Pagination ── */
+    .work-swiper .swiper-pagination-bullet {
+      background: var(--foreground);
+      opacity: 0.25;
+      transition: all 0.2s ease;
+    }
+    .work-swiper .swiper-pagination-bullet-active {
+      opacity: 1;
+      transform: scale(1.25);
+    }
+
+    /* ── Nav arrows ── */
+    .work-swiper .swiper-button-prev,
+    .work-swiper .swiper-button-next {
+      color: var(--foreground);
+      opacity: 0.45;
+      transition: opacity 0.2s;
+    }
+    .work-swiper .swiper-button-prev:hover,
+    .work-swiper .swiper-button-next:hover { opacity: 1; }
   `;
 
   return (
-    <section id="work" className="w-full bg-background py-12 sm:py-20 overflow-hidden">
+    <section
+      id="work"
+      className="w-full bg-background py-12 sm:py-20 overflow-x-hidden"
+    >
       <style>{css}</style>
 
-
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-[100vw]"
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        /* ── Matches .site-container max-width so it aligns with every other section ── */
+        className="w-full max-w-[1400px] mx-auto"
       >
-          <Swiper
-            spaceBetween={20}
-            autoplay={{ delay: autoplayDelay, disableOnInteraction: false }}
-            effect="coverflow"
-            grabCursor={true}
-            centeredSlides={true}
-            loop={true}
-            slidesPerView="auto"
-            coverflowEffect={{ rotate: 0, stretch: 0, depth: 150, modifier: 1.5, slideShadows: false }}
-            pagination={showPagination ? { clickable: true, dynamicBullets: true } : false}
-            navigation={showNavigation}
-            modules={[EffectCoverflow, Autoplay, Pagination, Navigation]}
-            className="!px-4 md:!px-0"
-          >
-            {items.map((item, index) => {
-              const isVideo = item.type === "video" || item.src?.endsWith(".mp4") || item.src?.includes("drive.google.com");
-              const mediaSrc = isVideo ? getGoogleDriveDirectLink(item.src) : item.src;
-              
-              return (
-                <SwiperSlide key={index}>
-                  {({ isActive }) => (
-                    <div className="aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-2xl relative group">
-                      {isVideo ? (
-                        <video 
-                          src={mediaSrc} 
-                          autoPlay={isActive} 
-                          loop 
-                          muted 
-                          playsInline 
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                        />
-                      ) : (
-                        <img 
-                          src={mediaSrc} 
-                          alt={item.alt} 
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                        />
+        <Swiper
+          ref={swiperRef}
+          /* ── Fixed-width slides; Swiper works out how many fit ── */
+          slidesPerView="auto"
+          spaceBetween={20}
+          centeredSlides={true}
+
+          /* ── Seamless infinite loop ── */
+          loop={true}
+
+          /* ── Auto-advance between cards ── */
+          autoplay={{ 
+            delay: autoplayDelay, 
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+
+          grabCursor={true}
+          pagination={showPagination ? { clickable: true, dynamicBullets: true } : false}
+          navigation={showNavigation}
+          modules={[Autoplay, Pagination, Navigation]}
+          className="work-swiper"
+        >
+          {loopItems.map((item, index) => {
+            return (
+              <SwiperSlide key={index}>
+                {({ isActive }) => {
+                  const videoRef = useRef<HTMLVideoElement>(null);
+
+                  useEffect(() => {
+                    const video = videoRef.current;
+                    if (!video) return;
+
+                    if (isActive && !isHovered) {
+                      video.play().catch(() => {});
+                    } else if (!isActive) {
+                      video.pause();
+                      video.currentTime = 0;
+                    }
+                  }, [isActive, isHovered]);
+
+                  useEffect(() => {
+                    const video = videoRef.current;
+                    if (!video) return;
+
+                    if (isHovered && isActive) {
+                      video.currentTime = 0;
+                      video.play().catch(() => {});
+                    }
+                  }, [isHovered, isActive]);
+
+                  useEffect(() => {
+                    const handleEnded = () => {
+                      slideNext();
+                    };
+                    const video = videoRef.current;
+                    if (video && isHovered && isActive) {
+                      video.addEventListener('ended', handleEnded);
+                      return () => video.removeEventListener('ended', handleEnded);
+                    }
+                  }, [isHovered, isActive, slideNext]);
+
+                  useEffect(() => {
+                    const video = videoRef.current;
+                    if (video) {
+                      video.muted = isMuted;
+                    }
+                  }, [isMuted]);
+
+                  return (
+                    <div 
+                      className="aspect-[9/16] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-2xl relative"
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                    >
+                      <video
+                        ref={videoRef}
+                        src={item.src}
+                        poster={item.poster || getVideoPoster(item.src)}
+                        className="w-full h-full object-cover"
+                        muted={isMuted}
+                        playsInline
+                        loop={!isHovered}
+                        preload="none"
+                      />
+                      {isActive && isHovered && (
+                        <button
+                          onClick={toggleMute}
+                          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                        >
+                          {isMuted ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                              <line x1="23" y1="9" x2="17" y2="15"></line>
+                              <line x1="17" y1="9" x2="23" y2="15"></line>
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                          )}
+                        </button>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="absolute bottom-0 left-0 p-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-                        <h3 className="text-white text-2xl font-semibold tracking-tight">{item.alt}</h3>
-                      </div>
                     </div>
-                  )}
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
-        </motion.div>
+                  );
+                }}
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </motion.div>
     </section>
   );
 };
