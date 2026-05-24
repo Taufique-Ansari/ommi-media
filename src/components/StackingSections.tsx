@@ -140,7 +140,7 @@ function Panel({
           </div>
           
           {/* Body */}
-          <div className="text-lg sm:text-2xl leading-[1.2] opacity-80 my-4 flex flex-wrap gap-x-[0.3em]">
+          <div className="text-lg sm:text-2xl leading-[1.5] opacity-80 my-4 flex flex-wrap gap-x-[0.3em]">
             {panel.body.split(" ").map((word, i) => (
               <span key={i} className="inline-block overflow-hidden">
                 <span data-gsap="body-word" className="inline-block">{word}</span>
@@ -194,7 +194,7 @@ function Panel({
               />
 
               {/* Body text */}
-              <p className="text-lg lg:text-[34px] leading-[34px] opacity-75 max-w-2xl flex flex-wrap gap-x-[0.3em]">
+              <p className="text-lg lg:text-[34px] leading-[40px] opacity-75 max-w-2xl flex flex-wrap gap-x-[0.3em]">
                 {panel.body.split(" ").map((word, i) => (
                   <span key={i} className="inline-block overflow-hidden">
                     <span data-gsap="body-word" className="inline-block">{word}</span>

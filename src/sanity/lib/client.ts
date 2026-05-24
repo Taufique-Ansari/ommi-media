@@ -9,11 +9,36 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false, // Set to false if statically generating pages, using ISR or tag-based revalidation
+  useCdn: false,
 });
 
 const builder = imageUrlBuilder(client);
 
 export function urlFor(source: any) {
   return builder.image(source);
+}
+
+export interface Reel {
+  _id: string;
+  title: string;
+  videoUrl: string;
+  fallbackImage?: {
+    asset: {
+      url: string;
+    };
+  };
+}
+
+export async function getReels(): Promise<Reel[]> {
+  const query = `*[_type == "reel"] | order(_createdAt desc) {
+    _id,
+    title,
+    videoUrl,
+    fallbackImage {
+      asset->{
+        url
+      }
+    }
+  }`;
+  return client.fetch(query);
 }

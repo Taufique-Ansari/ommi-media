@@ -2,42 +2,24 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-interface CarouselItem {
+export interface CarouselItem {
   src: string;
   poster?: string;
   alt: string;
 }
 
-interface CarouselProps {
-  items?: CarouselItem[];
+export interface CarouselProps {
+  items: CarouselItem[];
   autoplayDelay?: number;
   showPagination?: boolean;
   showNavigation?: boolean;
 }
-
-const defaultItems: CarouselItem[] = [
-  {
-    src: "https://res.cloudinary.com/dtvwoycjx/video/upload/v1778844041/Rock_g6362s.mp4",
-    poster: "https://res.cloudinary.com/dtvwoycjx/video/upload/so_auto,w_400/v1778844041/Rock_g6362s.jpg",
-    alt: "Rock Video",
-  },
-  {
-    src: "https://res.cloudinary.com/dtvwoycjx/video/upload/v1778844029/KitKat_lnftjp.mp4",
-    poster: "https://res.cloudinary.com/dtvwoycjx/video/upload/so_auto,w_400/v1778844029/KitKat_lnftjp.jpg",
-    alt: "KitKat Video",
-  },
-  {
-    src: "https://res.cloudinary.com/dtvwoycjx/video/upload/v1778844025/S5_oj98vx.mp4",
-    poster: "https://res.cloudinary.com/dtvwoycjx/video/upload/so_auto,w_400/v1778844025/S5_oj98vx.jpg",
-    alt: "S5 Video",
-  },
-];
 
 function getVideoPoster(videoSrc: string): string {
   const transformed = videoSrc
@@ -49,7 +31,7 @@ function getVideoPoster(videoSrc: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const CardCarousel: React.FC<CarouselProps> = ({
-  items        = defaultItems,
+  items,
   autoplayDelay = 5000,
   showPagination = true,
   showNavigation = true,
@@ -65,6 +47,23 @@ export const CardCarousel: React.FC<CarouselProps> = ({
   const swiperRef = useRef<any>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<CarouselItem | null>(null);
+
+  const handleVideoClick = useCallback((item: CarouselItem) => {
+    setSelectedVideo(item);
+    const swiper = swiperRef.current?.swiper || swiperRef.current;
+    if (swiper?.autoplay) {
+      swiper.autoplay.stop();
+    }
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setSelectedVideo(null);
+    const swiper = swiperRef.current?.swiper || swiperRef.current;
+    if (swiper?.autoplay) {
+      swiper.autoplay.start();
+    }
+  }, []);
 
   const slideNext = useCallback(() => {
     swiperRef.current?.slideNext();
@@ -207,9 +206,10 @@ export const CardCarousel: React.FC<CarouselProps> = ({
 
                   return (
                     <div 
-                      className="aspect-[9/16] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-2xl relative"
+                      className="aspect-[9/16] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-2xl relative cursor-pointer"
                       onMouseEnter={() => setIsHovered(true)}
                       onMouseLeave={() => setIsHovered(false)}
+                      onClick={() => handleVideoClick(item)}
                     >
                       <video
                         ref={videoRef}
@@ -248,6 +248,53 @@ export const CardCarousel: React.FC<CarouselProps> = ({
           })}
         </Swiper>
       </motion.div>
+
+      {/* Fullscreen Video Preview Modal */}
+      <AnimatePresence>
+        {selectedVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                handleCloseModal();
+              }
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white backdrop-blur border border-white/20 transition-all z-50 cursor-pointer shadow-lg"
+              aria-label="Close video preview"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            {/* Video Content Card */}
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative max-w-[420px] w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl flex items-center justify-center"
+            >
+              <video
+                src={selectedVideo.src}
+                className="w-full h-full object-cover"
+                controls
+                autoPlay
+                playsInline
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

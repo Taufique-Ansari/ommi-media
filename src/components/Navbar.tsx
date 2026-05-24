@@ -10,6 +10,7 @@ const links = [
   { name: "Home", id: "home" },
   { name: "Work", id: "work" },
   { name: "About", id: "about" },
+  { name: "Services", id: "services" },
   { name: "FAQ's", id: "faqs" }
 ];
 
