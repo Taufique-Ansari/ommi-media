@@ -8,6 +8,7 @@ import { FAQ } from "@/components/FAQ";
 import { CTA, Footer } from "@/components/CTA";
 import { getReels } from "@/sanity/lib/client";
 import { getCloudinaryVideos } from "@/lib/cloudinary";
+import { BookingModal } from "@/components/BookingModal";
 
 export default async function Home() {
   // Fetch reels from Sanity
@@ -62,6 +63,7 @@ export default async function Home() {
         <Packages />
         <FAQ />
         <CTA />
+        <BookingModal />
       </main>
       <Footer />
     </>

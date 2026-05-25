@@ -7,10 +7,11 @@ const WEBP_DISPLACEMENT_MAP = "data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAA
 export interface LiquidGlassContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   glassColor?: string;
   contentClassName?: string;
+  scale?: number;
 }
 
 const LiquidGlassContainer = React.forwardRef<HTMLDivElement, LiquidGlassContainerProps>(
-  ({ className, children, glassColor, contentClassName, ...props }, ref) => {
+  ({ className, children, glassColor, contentClassName, scale = 0.02, ...props }, ref) => {
     // Generate a unique ID so multiple containers don't conflict with each other's SVG filters
     const filterId = React.useId().replace(/:/g, "");
 
@@ -32,7 +33,7 @@ const LiquidGlassContainer = React.forwardRef<HTMLDivElement, LiquidGlassContain
               id="disp" 
               in="blur" 
               in2="map" 
-              scale="0.5" 
+              scale={scale} 
               xChannelSelector="R" 
               yChannelSelector="G" 
             />

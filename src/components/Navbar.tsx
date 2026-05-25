@@ -92,7 +92,7 @@ export function Navbar() {
                       className="absolute inset-0 z-0"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     >
-                      <LiquidGlassContainer className="w-full h-full rounded-full" glassColor="oklch(from var(--foreground) l c h / 15%)" />
+                      <div className="w-full h-full rounded-full bg-foreground/[0.12] border border-foreground/[0.04] shadow-[inset_0_1px_2px_rgba(0,0,0,0.05),_0_1px_1px_rgba(0,0,0,0.02)]" />
                     </motion.div>
                   )}
                   <a
@@ -109,11 +109,12 @@ export function Navbar() {
         </LiquidGlassContainer>
 
         <div className="flex items-center gap-3">
-          <a href="https://calendly.com/ommimedia-in/30min" className="hidden sm:block" >
-            <GlassButton className="px-5 py-3 font-medium transition-transform">
-              Book a Call
-            </GlassButton>
-          </a>
+          <GlassButton 
+            onClick={() => window.dispatchEvent(new Event("open-booking-modal"))} 
+            className="hidden sm:block px-5 py-3 font-medium transition-transform cursor-pointer"
+          >
+            Book a Call
+          </GlassButton>
 
           {/* Mobile hamburger */}
           <button
@@ -149,12 +150,15 @@ export function Navbar() {
               </a>
             ))}
             <div className="px-6 py-3 pt-2 border-t border-border/30 mt-1">
-              <a
-                href="https://calendly.com/ommimedia-in/30min"
-                className="w-full inline-flex h-11 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background"
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  window.dispatchEvent(new Event("open-booking-modal"));
+                }}
+                className="w-full inline-flex h-11 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background cursor-pointer"
               >
                 Book a Call
-              </a>
+              </button>
             </div>
           </div>
         </motion.div>

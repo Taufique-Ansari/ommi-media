@@ -27,10 +27,11 @@ export interface GlassButtonProps
     VariantProps<typeof glassButtonVariants> {
   contentClassName?: string;
   glassColor?: string; // e.g. "oklch(from var(--foreground) l c h / 10%)"
+  scale?: number;
 }
 
 const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
-  ({ className, children, size, contentClassName, glassColor, ...props }, ref) => {
+  ({ className, children, size, contentClassName, glassColor, scale = 0.03, ...props }, ref) => {
     // Generate a unique ID so multiple buttons don't conflict with each other's SVG filters
     const filterId = React.useId().replace(/:/g, "");
 
@@ -60,7 +61,7 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
               id="disp" 
               in="blur" 
               in2="map" 
-              scale="0.5" 
+              scale={scale} 
               xChannelSelector="R" 
               yChannelSelector="G" 
             />

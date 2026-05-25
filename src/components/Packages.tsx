@@ -375,14 +375,12 @@ export function Packages() {
                     <p className="text-xs sm:text-sm text-muted-foreground italic font-medium">
                       {activePackage.ctaNote}
                     </p>
-                    <a
-                      href="https://calendly.com/ommimedia-in/30min"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex h-12 items-center justify-center rounded-full bg-foreground px-8 text-sm font-semibold text-background transition-transform hover:scale-[1.03] shadow-md"
+                    <button
+                      onClick={() => window.dispatchEvent(new Event("open-booking-modal"))}
+                      className="inline-flex h-12 items-center justify-center rounded-full bg-foreground px-8 text-sm font-semibold text-background transition-transform hover:scale-[1.03] shadow-md cursor-pointer"
                     >
                       Book a Call &rarr;
-                    </a>
+                    </button>
                   </div>
 
                 </div>
@@ -486,14 +484,12 @@ export function Packages() {
                           Swipe left to browse
                         </p>
                       </div>
-                      <a
-                        href="https://calendly.com/ommimedia-in/30min"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex h-9 items-center justify-center rounded-full bg-foreground px-4 text-xs font-semibold text-background transition-transform active:scale-95 shadow-md"
+                      <button
+                        onClick={() => window.dispatchEvent(new Event("open-booking-modal"))}
+                        className="inline-flex h-9 items-center justify-center rounded-full bg-foreground px-4 text-xs font-semibold text-background transition-transform active:scale-95 shadow-md cursor-pointer"
                       >
                         Book &rarr;
-                      </a>
+                      </button>
                     </div>
 
                   </div>

@@ -8,7 +8,7 @@ export function Hero() {
       className="relative flex min-h-[100vh] items-center justify-center overflow-hidden"
     >
       <div className="absolute inset-0 grid-bg" />
-      <div className="site-container relative z-10 text-center">
+      <div className="site-container relative z-10 text-center mt-0 sm:mt-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -42,15 +42,21 @@ export function Hero() {
           transition={{ delay: 0.7, duration: 0.8 }}
           className="mt-8"
         >
-          <a
-            href="https://calendly.com/ommimedia-in/30min"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-11 sm:h-12 items-center justify-center rounded-full bg-foreground px-6 sm:px-8 text-sm font-medium text-background transition-transform hover:scale-105"
+          <button
+            onClick={() => window.dispatchEvent(new Event("open-booking-modal"))}
+            className="inline-flex h-11 sm:h-12 items-center justify-center rounded-full bg-foreground px-6 sm:px-8 text-sm font-medium text-background transition-transform hover:scale-105 cursor-pointer"
           >
             Book a strategy call →
-          </a>
+          </button>
         </motion.div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+          className="mx-auto mt-20 sm:mt-32 max-w-xl text-[13px] sm:text-sm text-muted-foreground/80 font-medium leading-relaxed tracking-tight"
+        >
+          The minds behind <span className="text-foreground font-semibold">1M+ views</span> and <span className="text-foreground font-semibold">500K in subscriber growth</span> — now building content systems that generate leads for coaches, consultants and founders.
+        </motion.p>
       </div>
     </section>
   );
