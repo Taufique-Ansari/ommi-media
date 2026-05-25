@@ -51,7 +51,10 @@ export async function POST(request: Request) {
     const startDateTime = new Date(`${date}T${time}:00${offset}`);
     const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000); // 30 mins
 
-    let googleMeetUrl = "";
+    const staticMeetUrl = process.env.GOOGLE_MEET_URL?.trim();
+    const isStaticMeet = !!staticMeetUrl;
+
+    let googleMeetUrl = isStaticMeet ? staticMeetUrl : "";
     let calendarEventId = "";
 
     // 1. Google Calendar Booking
@@ -94,9 +97,17 @@ export async function POST(request: Request) {
 
       const calendar = google.calendar({ version: "v3", auth });
 
-      const event = {
+      const eventDescription = [
+        `Client Name: ${name}`,
+        `Client Email: ${email}`,
+        `Selected Service: ${service}`,
+        isStaticMeet ? `Google Meet Link: ${staticMeetUrl}` : "",
+        `\nClient Project Notes:\n${details || "None provided"}`
+      ].filter(Boolean).join("\n");
+
+      const event: any = {
         summary: `Discovery Call: ${name} (${service})`,
-        description: `Client Name: ${name}\nClient Email: ${email}\nSelected Service: ${service}\n\nClient Project Notes:\n${details || "None provided"}`,
+        description: eventDescription,
         start: {
           dateTime: startDateTime.toISOString(),
           timeZone: "Asia/Kolkata", // default target timezone label
@@ -105,21 +116,28 @@ export async function POST(request: Request) {
           dateTime: endDateTime.toISOString(),
           timeZone: "Asia/Kolkata",
         },
-        conferenceData: {
+      };
+
+      if (isStaticMeet) {
+        event.location = staticMeetUrl;
+      } else {
+        event.conferenceData = {
           createRequest: {
             requestId: `booking-${Date.now()}`,
           },
-        },
-      };
+        };
+      }
 
       try {
         const result = await calendar.events.insert({
           calendarId,
           requestBody: event,
-          conferenceDataVersion: 1, // Crucial parameter to generate Google Meet link
+          conferenceDataVersion: isStaticMeet ? undefined : 1, // Crucial parameter to generate Google Meet link when dynamic
         });
         calendarEventId = result.data.id || "";
-        googleMeetUrl = result.data.conferenceData?.entryPoints?.[0]?.uri || "";
+        if (!isStaticMeet) {
+          googleMeetUrl = result.data.conferenceData?.entryPoints?.[0]?.uri || "";
+        }
       } catch (err: any) {
         console.error("Google Calendar API Insertion Error:", err);
         throw err;

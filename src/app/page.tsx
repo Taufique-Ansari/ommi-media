@@ -10,6 +10,10 @@ import { getReels } from "@/sanity/lib/client";
 import { getCloudinaryVideos } from "@/lib/cloudinary";
 import { BookingModal } from "@/components/BookingModal";
 
+// Revalidate static page cache every 60 seconds (Incremental Static Regeneration - ISR)
+// to fetch newly added videos from Cloudinary automatically without manual Vercel rebuilds.
+export const revalidate = 60;
+
 export default async function Home() {
   // Fetch reels from Sanity
   const reels = await getReels();

@@ -286,7 +286,7 @@ export const CardCarousel: React.FC<CarouselProps> = ({
             >
               <video
                 src={selectedVideo.src}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 controls
                 autoPlay
                 playsInline

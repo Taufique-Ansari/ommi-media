@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import PostHogPageView from "@/components/PostHogPageView";
 
 import localFont from "next/font/local";
 
@@ -59,16 +60,16 @@ const thunderLC = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ommimedia.in"),
+  metadataBase: new URL("https://ommimedia.com"),
   title: {
-    default: "ommi media — Content that commands attention",
-    template: "%s | ommi media",
+    default: "Ommi Media — Content that commands attention",
+    template: "%s | Ommi Media",
   },
   description: "A creative studio crafting bold brand films, product launches and digital experiences with strategy, design and engineering.",
   keywords: ["Creative Studio", "Brand Films", "Product Launch", "Digital Experiences", "Content Strategy", "Video Production", "OMMI MEDIA"],
-  authors: [{ name: "ommi media" }],
-  creator: "ommi media",
-  publisher: "ommi media",
+  authors: [{ name: "Ommi Media" }],
+  creator: "Ommi Media",
+  publisher: "Ommi Media",
   formatDetection: {
     email: false,
     address: false,
@@ -77,22 +78,22 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://ommimedia.in",
-    siteName: "ommi media",
-    title: "ommi media — Content that commands attention",
+    url: "https://ommimedia.com",
+    siteName: "Ommi Media",
+    title: "Ommi Media — Content that commands attention",
     description: "A creative studio crafting bold brand films, product launches and digital experiences with strategy, design and engineering.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "ommi media — Content that commands attention",
+        alt: "Ommi Media — Content that commands attention",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ommi media — Content that commands attention",
+    title: "Ommi Media — Content that commands attention",
     description: "A creative studio crafting bold brand films, product launches and digital experiences with strategy, design and engineering.",
     images: ["/og-image.png"],
     creator: "@ommimedia",
@@ -119,6 +120,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${thunder.variable} ${thunderLC.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col overflow-x-hidden">
         <Providers>
+          <PostHogPageView />
           <SmoothScroll />
           {children}
         </Providers>
