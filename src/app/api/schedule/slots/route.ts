@@ -87,13 +87,14 @@ export async function GET(request: Request) {
     ];
 
     const now = Date.now();
+    const LEAD_TIME_MS = 12 * 60 * 60 * 1000; // 12-hour advance booking rule
 
     const availableSlots = standardSlots.filter((timeStr) => {
       const slotStart = new Date(`${dateStr}T${timeStr}:00${offset}`).getTime();
       const slotEnd = slotStart + 30 * 60 * 1000; // 30-minute duration
 
-      // Don't show slots in the past
-      if (slotStart <= now) {
+      // Require at least 12 hours notice
+      if (slotStart <= now + LEAD_TIME_MS) {
         return false;
       }
 

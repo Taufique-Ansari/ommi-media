@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 
@@ -265,8 +265,8 @@ export function Packages() {
           </h2>
         </motion.div>
 
-        {/* ── DESKTOP LAYOUT (md and above) ── */}
-        <div className="hidden md:block">
+        {/* ── DESKTOP LAYOUT (lg and above) ── */}
+        <div className="hidden lg:block">
           {/* Tab Row Selector */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -389,8 +389,8 @@ export function Packages() {
           </motion.div>
         </div>
 
-        {/* ── MOBILE LAYOUT (Stack of playing cards with custom GSAP transitions) ── */}
-        <div className="block md:hidden max-w-[380px] mx-auto">
+        {/* ── TABLET / MOBILE LAYOUT (Stack of playing cards with custom GSAP transitions) ── */}
+        <div className="block lg:hidden max-w-[480px] mx-auto">
           
           {/* Deck Container (increased height to accommodate taller cards cleanly) */}
           <div className="relative w-full h-[660px] flex items-center justify-center select-none mb-4">

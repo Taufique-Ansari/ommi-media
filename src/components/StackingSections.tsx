@@ -172,7 +172,7 @@ function Panel({
         <div className="hidden md:flex w-full h-full">
 
           {/* LEFT SIDE */}
-          <div className="flex flex-col justify-between w-1/2 h-full p-14">
+          <div className="flex flex-col justify-between w-1/2 h-full p-8 lg:p-14">
 
             {/* Top: number + separator + body */}
             <div className="flex items-start gap-6">
@@ -180,7 +180,7 @@ function Panel({
               <div className="overflow-hidden flex-shrink-0 pt-1">
                 <span
                   data-gsap="tag"
-                  className="block font-mono lg:text-[34px] text-xl tracking-widest opacity-50"
+                  className="block font-mono text-base lg:text-lg xl:text-2xl tracking-widest opacity-50"
                 >
                   {panel.tag.split("—")[0].trim()}
                 </span>
@@ -194,7 +194,7 @@ function Panel({
               />
 
               {/* Body text */}
-              <p className="text-lg lg:text-[34px] leading-[40px] opacity-75 max-w-2xl flex flex-wrap gap-x-[0.3em]">
+              <p className="text-base lg:text-lg xl:text-2xl xl:leading-8 leading-relaxed opacity-75 max-w-2xl flex flex-wrap gap-x-[0.3em]">
                 {panel.body.split(" ").map((word, i) => (
                   <span key={i} className="inline-block overflow-hidden">
                     <span data-gsap="body-word" className="inline-block">{word}</span>
@@ -207,7 +207,7 @@ function Panel({
             <div className="flex flex-col gap-5">
               <h3
                 data-gsap="title"
-                className="font-display text-[clamp(2.5rem,5.5vw,6rem)] font-bold leading-[0.9] tracking-tighter"
+                className="font-display md:text-3xl lg:text-[clamp(2rem,4vw,5rem)] font-bold leading-[0.9] tracking-tighter"
               >
                 {panel.title}
               </h3>
@@ -222,11 +222,11 @@ function Panel({
 
           {/* RIGHT SIDE — image with caption */}
           {panel.image && (
-            <div className="relative w-1/2 h-full flex items-center justify-center p-10">
+            <div className="relative w-1/2 h-full flex items-center justify-center p-6 lg:p-10">
               {/* Vertical line decoration */}
               <div
                 data-gsap="line"
-                className="absolute left-0 top-10 bottom-10 w-px opacity-20"
+                className="absolute left-0 top-6 bottom-6 lg:top-10 lg:bottom-10 w-px opacity-20"
                 style={{ backgroundColor: "currentColor" }}
               />
 
@@ -240,7 +240,7 @@ function Panel({
               </div>
 
               {/* Caption label */}
-              <div className="absolute bottom-10 left-10 right-10 overflow-hidden">
+              <div className="absolute bottom-6 left-6 right-6 lg:bottom-10 lg:left-10 lg:right-10 overflow-hidden">
                 <p
                   data-gsap="caption"
                   className="text-xs tracking-[0.2em] uppercase opacity-50"

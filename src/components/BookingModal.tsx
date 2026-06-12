@@ -78,7 +78,10 @@ export function BookingModal({ defaultOpen = false }: BookingModalProps) {
     const fetchSlots = async () => {
       setLoadingSlots(true);
       try {
-        const formattedDate = selectedDate.toISOString().split("T")[0];
+        const y = selectedDate.getFullYear();
+        const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
+        const d = String(selectedDate.getDate()).padStart(2, "0");
+        const formattedDate = `${y}-${m}-${d}`;
         const res = await fetch(`/api/schedule/slots?date=${formattedDate}`);
         const data = await res.json();
         if (data.slots) {
@@ -97,14 +100,30 @@ export function BookingModal({ defaultOpen = false }: BookingModalProps) {
     fetchSlots();
   }, [selectedDate]);
 
-  // Lock background scroll when open
+  // Lock background scroll when open. This site uses Locomotive Scroll (Lenis),
+  // which hijacks wheel events via its own RAF loop — so `overflow:hidden` alone
+  // is NOT enough. We must call lenis.stop() to freeze the virtual scroll, and the
+  // scrollable modal panel carries `data-lenis-prevent` so Lenis ignores wheel
+  // events inside it and lets the panel scroll natively.
   useEffect(() => {
+    const lenis = (window as any).lenis;
+
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      if (lenis && typeof lenis.stop === "function") lenis.stop();
     } else {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      if (lenis && typeof lenis.start === "function") lenis.start();
     }
-    return () => { document.body.style.overflow = ""; };
+
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      const l = (window as any).lenis;
+      if (l && typeof l.start === "function") l.start();
+    };
   }, [isOpen]);
 
   const handleNextStep = () => setStep((prev) => prev + 1);
@@ -126,7 +145,10 @@ export function BookingModal({ defaultOpen = false }: BookingModalProps) {
 
     setBookingInProgress(true);
     try {
-      const formattedDate = selectedDate.toISOString().split("T")[0];
+      const y = selectedDate.getFullYear();
+      const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
+      const d = String(selectedDate.getDate()).padStart(2, "0");
+      const formattedDate = `${y}-${m}-${d}`;
       const response = await fetch("/api/schedule/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -180,7 +202,7 @@ export function BookingModal({ defaultOpen = false }: BookingModalProps) {
   const isPastDate = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return date < today;
+    return date <= today; // slots start from next day only
   };
 
   const isWeekend = (date: Date) => {
@@ -211,10 +233,10 @@ export function BookingModal({ defaultOpen = false }: BookingModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.15 }}
-            className="relative w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row rounded-3xl bg-background border border-border/60 shadow-2xl overflow-hidden focus:outline-none"
+            className="relative w-full max-w-4xl max-h-[90vh] flex flex-col lg:flex-row rounded-3xl bg-background border border-border/60 shadow-2xl overflow-hidden focus:outline-none"
           >
             {/* LEFT COLUMN: BRANDING & SUMMARY */}
-            <div className="w-full md:w-2/5 p-8 bg-card/40 border-b md:border-b-0 md:border-r border-border/40 flex flex-col justify-between">
+            <div className="w-full lg:w-2/5 p-6 lg:p-8 bg-card/40 border-b lg:border-b-0 lg:border-r border-border/40 flex flex-col justify-between">
               <div>
                 <span className="inline-block px-3 py-1 rounded-full bg-foreground/[0.04] border border-foreground/[0.04] text-[11px] font-semibold tracking-wider text-foreground/60 uppercase mb-6">
                   Creative Partners
@@ -252,13 +274,16 @@ export function BookingModal({ defaultOpen = false }: BookingModalProps) {
                 </div>
               </div>
 
-              <div className="mt-8 text-[11px] text-foreground/30 leading-snug hidden md:block">
+              <div className="mt-8 text-[11px] text-foreground/30 leading-snug hidden lg:block">
                 Questions or custom integrations? Email us directly at <a href="mailto:ommimedia.in@gmail.com" className="underline hover:text-foreground">ommimedia.in@gmail.com</a>
               </div>
             </div>
 
             {/* RIGHT COLUMN: CORE INTERACTIVE PANEL */}
-            <div className="w-full md:w-3/5 p-8 flex flex-col overflow-y-auto max-h-[60vh] md:max-h-[85vh]">
+            <div
+              data-lenis-prevent
+              className="w-full lg:w-3/5 p-6 lg:p-8 flex flex-col overflow-y-auto overscroll-contain max-h-[65vh] lg:max-h-[85vh]"
+            >
               {/* HEADER W/ CLOSE BUTTON */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
