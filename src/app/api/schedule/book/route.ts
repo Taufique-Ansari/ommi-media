@@ -161,10 +161,10 @@ export async function POST(request: Request) {
       timeZone: "Asia/Kolkata",
     });
 
-    const formattedTime = startDateTime.toLocaleTimeString("en-US", {
+    const formattedTime = startDateTime.toLocaleTimeString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
       timeZone: "Asia/Kolkata",
     });
 
@@ -182,10 +182,9 @@ export async function POST(request: Request) {
       });
 
       const firstName = name.split(" ")[0];
-      const fontStack = "'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      const monoStack = "'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace";
+      const fontStack = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-      // Client Confirmation Email — premium agency aesthetic (bulletproof, table-based)
+      // Client Confirmation Email — minimal, monochrome, table-based (bulletproof)
       const clientEmailHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -195,165 +194,88 @@ export async function POST(request: Request) {
         <meta name="x-apple-disable-message-reformatting" />
         <title>Discovery Call Confirmed</title>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #ECE8DF; -webkit-font-smoothing: antialiased; font-family: ${fontStack};">
+      <body style="margin: 0; padding: 0; background-color: #F4F4F2; -webkit-font-smoothing: antialiased; font-family: ${fontStack};">
         <!-- Hidden preheader -->
         <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; mso-hide: all;">
-          You're confirmed, ${firstName} — ${formattedDate} at ${formattedTime} IST. Your private video room is ready.
+          Your call is confirmed — ${formattedDate} at ${formattedTime} IST.
         </div>
 
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #ECE8DF;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #F4F4F2;">
           <tr>
-            <td align="center" style="padding: 40px 16px;">
-              <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width: 600px; max-width: 600px; background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 18px 50px -12px rgba(20,18,14,0.18);">
+            <td align="center" style="padding: 48px 16px;">
+              <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="width: 480px; max-width: 480px; background-color: #FFFFFF; border: 1px solid #E8E8E6; border-radius: 14px;">
 
-                <!-- LETTERHEAD -->
+                <!-- WORDMARK -->
                 <tr>
-                  <td style="background-color: #111110; padding: 34px 40px;">
+                  <td style="padding: 32px 40px 0 40px;">
+                    <p style="margin: 0; font-family: ${fontStack}; font-size: 15px; font-weight: 600; color: #1A1A1A; letter-spacing: 0.02em;">Ommi Media</p>
+                  </td>
+                </tr>
+
+                <!-- HEADING -->
+                <tr>
+                  <td style="padding: 28px 40px 0 40px;">
+                    <p style="margin: 0 0 10px 0; font-family: ${fontStack}; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9B9B9B;">Booking confirmed</p>
+                    <h1 style="margin: 0 0 12px 0; font-family: ${fontStack}; font-size: 22px; line-height: 1.3; font-weight: 600; color: #1A1A1A; letter-spacing: -0.01em;">Your call is confirmed</h1>
+                    <p style="margin: 0; font-family: ${fontStack}; font-size: 15px; line-height: 1.65; color: #6B6B6B;">
+                      Hi ${firstName}, your discovery call is booked. Here are the details — we're looking forward to speaking with you.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- DETAILS -->
+                <tr>
+                  <td style="padding: 28px 40px 0 40px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td align="left" style="font-family: ${fontStack}; color: #F6F3EC; font-size: 17px; font-weight: 700; letter-spacing: 0.32em;">
-                          OMMI&nbsp;MEDIA
-                        </td>
-                        <td align="right" style="font-family: ${monoStack}; color: #B8946A; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;">
-                          Confirmed
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <!-- Accent hairline -->
-                <tr><td style="height: 3px; background: linear-gradient(90deg, #B8946A 0%, #D8C29A 50%, #B8946A 100%); font-size: 0; line-height: 0;">&nbsp;</td></tr>
-
-                <!-- GREETING -->
-                <tr>
-                  <td style="padding: 44px 40px 8px 40px;">
-                    <p style="margin: 0 0 14px 0; font-family: ${monoStack}; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #B8946A; font-weight: 600;">
-                      Discovery Call &middot; Secured
-                    </p>
-                    <h1 style="margin: 0 0 16px 0; font-family: ${fontStack}; font-size: 30px; line-height: 1.15; font-weight: 700; color: #141310; letter-spacing: -0.02em;">
-                      See you soon, ${firstName}.
-                    </h1>
-                    <p style="margin: 0; font-family: ${fontStack}; font-size: 15px; line-height: 1.7; color: #5F5C53; font-weight: 400;">
-                      Your seat is reserved on our calendar. Below is everything you need — the moment, the room, and a short way to make the call count. We're looking forward to building with you.
-                    </p>
-                  </td>
-                </tr>
-
-                <!-- APPOINTMENT TICKET -->
-                <tr>
-                  <td style="padding: 32px 40px 8px 40px;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF8F3; border: 1px solid #E9E3D6; border-radius: 16px;">
-                      <tr>
-                        <td style="padding: 26px 28px 22px 28px;">
-                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                              <td width="50%" style="vertical-align: top;">
-                                <p style="margin: 0 0 6px 0; font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #9C988C; font-weight: 600;">Date</p>
-                                <p style="margin: 0; font-family: ${fontStack}; font-size: 18px; line-height: 1.3; font-weight: 700; color: #141310;">${formattedDate}</p>
-                              </td>
-                              <td width="50%" style="vertical-align: top; padding-left: 16px;">
-                                <p style="margin: 0 0 6px 0; font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #9C988C; font-weight: 600;">Time</p>
-                                <p style="margin: 0; font-family: ${fontStack}; font-size: 18px; line-height: 1.3; font-weight: 700; color: #141310;">${formattedTime} <span style="font-size: 12px; color: #9C988C; font-weight: 600;">IST</span></p>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                      <!-- Perforation divider -->
-                      <tr>
-                        <td style="padding: 0 28px;">
-                          <div style="border-top: 1px dashed #D8D1C1; font-size: 0; line-height: 0;">&nbsp;</div>
-                        </td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; width: 96px; vertical-align: top;">Date</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #1A1A1A; font-weight: 500; vertical-align: top;">${formattedDate}</td>
                       </tr>
                       <tr>
-                        <td style="padding: 20px 28px 24px 28px;">
-                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                              <td style="vertical-align: top;">
-                                <p style="margin: 0 0 6px 0; font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #9C988C; font-weight: 600;">Session</p>
-                                <p style="margin: 0; font-family: ${fontStack}; font-size: 14px; line-height: 1.4; font-weight: 600; color: #2C2A24;">${service} &middot; 30 minutes</p>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; vertical-align: top;">Time</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #1A1A1A; font-weight: 500; vertical-align: top;">${formattedTime} IST</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; border-bottom: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; vertical-align: top;">Session</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; border-bottom: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #1A1A1A; font-weight: 500; vertical-align: top;">${service} &middot; 30 min</td>
                       </tr>
                     </table>
                   </td>
                 </tr>
 
-                <!-- CTA BUTTON (bulletproof) -->
+                <!-- CTA -->
                 <tr>
-                  <td style="padding: 26px 40px 8px 40px;">
+                  <td style="padding: 28px 40px 0 40px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
-                        <td align="center" bgcolor="#141310" style="border-radius: 50px;">
-                          <a href="${googleMeetUrl}" target="_blank" style="display: block; padding: 16px 24px; font-family: ${fontStack}; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #F6F3EC; text-decoration: none; border-radius: 50px;">
-                            Join Google Meet Room &rarr;
+                        <td align="center" bgcolor="#1A1A1A" style="border-radius: 8px;">
+                          <a href="${googleMeetUrl}" target="_blank" style="display: block; padding: 14px 24px; font-family: ${fontStack}; font-size: 14px; font-weight: 600; color: #FFFFFF; text-decoration: none; border-radius: 8px;">
+                            Join Google Meet
                           </a>
                         </td>
                       </tr>
                     </table>
-                    <p style="margin: 12px 0 0 0; text-align: center; font-family: ${monoStack}; font-size: 11px; color: #9C988C; letter-spacing: 0.04em; word-break: break-all;">
-                      ${googleMeetUrl}
-                    </p>
                   </td>
                 </tr>
 
                 <!-- PREPARE -->
                 <tr>
-                  <td style="padding: 26px 40px 8px 40px;">
-                    <div style="border-top: 1px solid #ECE7DC; padding-top: 28px;">
-                      <p style="margin: 0 0 18px 0; font-family: ${monoStack}; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #B8946A; font-weight: 600;">
-                        Make the call count
-                      </p>
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                        <tr>
-                          <td style="padding-bottom: 16px; vertical-align: top;">
-                            <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-                              <td width="34" style="vertical-align: top;"><span style="font-family: ${monoStack}; font-size: 13px; font-weight: 700; color: #141310;">01</span></td>
-                              <td style="font-family: ${fontStack}; font-size: 14px; line-height: 1.6; color: #5F5C53;"><strong style="color: #2C2A24;">Know your numbers.</strong> Have a rough sense of your current reach, audience, and where the leads come from today.</td>
-                            </tr></table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding-bottom: 16px; vertical-align: top;">
-                            <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-                              <td width="34" style="vertical-align: top;"><span style="font-family: ${monoStack}; font-size: 13px; font-weight: 700; color: #141310;">02</span></td>
-                              <td style="font-family: ${fontStack}; font-size: 14px; line-height: 1.6; color: #5F5C53;"><strong style="color: #2C2A24;">Name the goal.</strong> The growth, authority, or pipeline you want over the next 90 days — even a loose target sharpens the plan.</td>
-                            </tr></table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="vertical-align: top;">
-                            <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-                              <td width="34" style="vertical-align: top;"><span style="font-family: ${monoStack}; font-size: 13px; font-weight: 700; color: #141310;">03</span></td>
-                              <td style="font-family: ${fontStack}; font-size: 14px; line-height: 1.6; color: #5F5C53;"><strong style="color: #2C2A24;">Arrive ready.</strong> Hop into the room a couple of minutes early to check your camera and mic.</td>
-                            </tr></table>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
+                  <td style="padding: 32px 40px 0 40px;">
+                    <p style="margin: 0 0 14px 0; font-family: ${fontStack}; font-size: 14px; font-weight: 600; color: #1A1A1A;">Before the call</p>
+                    <p style="margin: 0 0 9px 0; font-family: ${fontStack}; font-size: 14px; line-height: 1.6; color: #6B6B6B;">Have a rough sense of your current reach and where leads come from today.</p>
+                    <p style="margin: 0 0 9px 0; font-family: ${fontStack}; font-size: 14px; line-height: 1.6; color: #6B6B6B;">Think about the growth or pipeline you want over the next 90 days.</p>
+                    <p style="margin: 0; font-family: ${fontStack}; font-size: 14px; line-height: 1.6; color: #6B6B6B;">Join a couple of minutes early to check your camera and mic.</p>
                   </td>
                 </tr>
 
                 <!-- FOOTER -->
                 <tr>
-                  <td style="padding: 36px 40px 40px 40px;">
-                    <div style="border-top: 1px solid #ECE7DC; padding-top: 26px;">
-                      <p style="margin: 0 0 10px 0; font-family: ${fontStack}; font-size: 13px; line-height: 1.7; color: #5F5C53;">
-                        Need to reschedule? Just reply to this email or reach us at
-                        <a href="mailto:ommimedia.in@gmail.com" style="color: #141310; text-decoration: underline; font-weight: 600;">ommimedia.in@gmail.com</a>.
+                  <td style="padding: 32px 40px 32px 40px;">
+                    <div style="border-top: 1px solid #EDEDEB; padding-top: 20px;">
+                      <p style="margin: 0 0 6px 0; font-family: ${fontStack}; font-size: 13px; line-height: 1.6; color: #9B9B9B;">
+                        Need to reschedule? Reply to this email or write to <a href="mailto:ommimedia.in@gmail.com" style="color: #1A1A1A; text-decoration: none; font-weight: 500;">ommimedia.in@gmail.com</a>.
                       </p>
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 18px;">
-                        <tr>
-                          <td align="left" style="font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #A8A498;">
-                            &copy; 2026 Ommi Media
-                          </td>
-                          <td align="right" style="font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;">
-                            <a href="https://www.instagram.com/ommimedia.in/" target="_blank" style="color: #B8946A; text-decoration: none;">Instagram</a>
-                          </td>
-                        </tr>
-                      </table>
+                      <p style="margin: 0; font-family: ${fontStack}; font-size: 12px; color: #B5B5B5;">&copy; 2026 Ommi Media</p>
                     </div>
                   </td>
                 </tr>
@@ -366,7 +288,7 @@ export async function POST(request: Request) {
       </html>
       `;
 
-      // Admin Notification Email — matching premium system, dashboard-style lead brief
+      // Admin Notification Email — minimal lead brief, matching client system
       const adminEmailHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -376,65 +298,51 @@ export async function POST(request: Request) {
         <meta name="x-apple-disable-message-reformatting" />
         <title>New Booking</title>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #ECE8DF; -webkit-font-smoothing: antialiased; font-family: ${fontStack};">
+      <body style="margin: 0; padding: 0; background-color: #F4F4F2; -webkit-font-smoothing: antialiased; font-family: ${fontStack};">
         <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; mso-hide: all;">
           New booking — ${name} &middot; ${service} &middot; ${formattedDate} at ${formattedTime} IST.
         </div>
 
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #ECE8DF;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #F4F4F2;">
           <tr>
-            <td align="center" style="padding: 40px 16px;">
-              <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width: 600px; max-width: 600px; background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 18px 50px -12px rgba(20,18,14,0.18);">
+            <td align="center" style="padding: 48px 16px;">
+              <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="width: 480px; max-width: 480px; background-color: #FFFFFF; border: 1px solid #E8E8E6; border-radius: 14px;">
 
-                <!-- HEADER -->
+                <!-- WORDMARK -->
                 <tr>
-                  <td style="background-color: #111110; padding: 30px 40px;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td align="left">
-                          <p style="margin: 0 0 6px 0; font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #B8946A; font-weight: 600;">Leads Engine</p>
-                          <p style="margin: 0; font-family: ${fontStack}; font-size: 19px; font-weight: 700; color: #F6F3EC; letter-spacing: -0.01em;">New strategy call booked</p>
-                        </td>
-                        <td align="right" style="vertical-align: top;">
-                          <span style="display: inline-block; padding: 6px 12px; background-color: rgba(184,148,106,0.16); border: 1px solid rgba(184,148,106,0.4); border-radius: 50px; font-family: ${monoStack}; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #D8C29A; font-weight: 600;">New</span>
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="padding: 32px 40px 0 40px;">
+                    <p style="margin: 0; font-family: ${fontStack}; font-size: 15px; font-weight: 600; color: #1A1A1A; letter-spacing: 0.02em;">Ommi Media</p>
                   </td>
                 </tr>
 
-                <!-- WHEN STRIP -->
+                <!-- HEADING -->
                 <tr>
-                  <td style="background-color: #FAF8F3; border-bottom: 1px solid #ECE7DC; padding: 18px 40px;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #9C988C; font-weight: 600;">When</td>
-                        <td align="right" style="font-family: ${fontStack}; font-size: 14px; font-weight: 700; color: #141310;">${formattedDate} &middot; ${formattedTime} IST</td>
-                      </tr>
-                    </table>
+                  <td style="padding: 28px 40px 0 40px;">
+                    <p style="margin: 0 0 10px 0; font-family: ${fontStack}; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9B9B9B;">New booking</p>
+                    <h1 style="margin: 0 0 12px 0; font-family: ${fontStack}; font-size: 22px; line-height: 1.3; font-weight: 600; color: #1A1A1A; letter-spacing: -0.01em;">${name} booked a call</h1>
+                    <p style="margin: 0; font-family: ${fontStack}; font-size: 15px; line-height: 1.65; color: #6B6B6B;">${formattedDate} at ${formattedTime} IST</p>
                   </td>
                 </tr>
 
-                <!-- LEAD PROFILE -->
+                <!-- DETAILS -->
                 <tr>
-                  <td style="padding: 32px 40px 8px 40px;">
-                    <p style="margin: 0 0 18px 0; font-family: ${monoStack}; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #B8946A; font-weight: 600;">Lead Profile</p>
+                  <td style="padding: 28px 40px 0 40px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="padding: 11px 0; border-bottom: 1px solid #F0ECE2; font-family: ${fontStack}; font-size: 13px; color: #9C988C; width: 110px;">Name</td>
-                        <td style="padding: 11px 0; border-bottom: 1px solid #F0ECE2; font-family: ${fontStack}; font-size: 14px; color: #141310; font-weight: 700;">${name}</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; width: 96px; vertical-align: top;">Name</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #1A1A1A; font-weight: 500; vertical-align: top;">${name}</td>
                       </tr>
                       <tr>
-                        <td style="padding: 11px 0; border-bottom: 1px solid #F0ECE2; font-family: ${fontStack}; font-size: 13px; color: #9C988C;">Email</td>
-                        <td style="padding: 11px 0; border-bottom: 1px solid #F0ECE2; font-family: ${fontStack}; font-size: 14px; font-weight: 700;"><a href="mailto:${email}" style="color: #141310; text-decoration: underline;">${email}</a></td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; vertical-align: top;">Email</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; vertical-align: top;"><a href="mailto:${email}" style="color: #1A1A1A; text-decoration: none; font-weight: 500;">${email}</a></td>
                       </tr>
                       <tr>
-                        <td style="padding: 11px 0; border-bottom: 1px solid #F0ECE2; font-family: ${fontStack}; font-size: 13px; color: #9C988C;">Service</td>
-                        <td style="padding: 11px 0; border-bottom: 1px solid #F0ECE2; font-family: ${fontStack}; font-size: 14px; color: #141310; font-weight: 700;">${service}</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; vertical-align: top;">Service</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #1A1A1A; font-weight: 500; vertical-align: top;">${service}</td>
                       </tr>
                       <tr>
-                        <td style="padding: 11px 0; font-family: ${fontStack}; font-size: 13px; color: #9C988C;">Meet Room</td>
-                        <td style="padding: 11px 0; font-family: ${monoStack}; font-size: 12px; font-weight: 600;"><a href="${googleMeetUrl}" style="color: #B8946A; text-decoration: underline; word-break: break-all;">${googleMeetUrl}</a></td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; border-bottom: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 14px; color: #9B9B9B; vertical-align: top;">Meet</td>
+                        <td style="padding: 14px 0; border-top: 1px solid #EDEDEB; border-bottom: 1px solid #EDEDEB; font-family: ${fontStack}; font-size: 13px; vertical-align: top;"><a href="${googleMeetUrl}" style="color: #1A1A1A; text-decoration: none; font-weight: 500; word-break: break-all;">${googleMeetUrl}</a></td>
                       </tr>
                     </table>
                   </td>
@@ -442,26 +350,20 @@ export async function POST(request: Request) {
 
                 <!-- MESSAGE -->
                 <tr>
-                  <td style="padding: 20px 40px 8px 40px;">
-                    <p style="margin: 0 0 12px 0; font-family: ${monoStack}; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #B8946A; font-weight: 600;">Project Notes</p>
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF8F3; border: 1px solid #E9E3D6; border-radius: 14px;">
-                      <tr>
-                        <td style="padding: 18px 20px; font-family: ${fontStack}; font-size: 14px; line-height: 1.65; color: #5F5C53;">
-                          ${details ? details.replace(/\n/g, "<br/>") : "<em style='color: #A8A498;'>No additional details provided.</em>"}
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="padding: 28px 40px 0 40px;">
+                    <p style="margin: 0 0 10px 0; font-family: ${fontStack}; font-size: 14px; font-weight: 600; color: #1A1A1A;">Project notes</p>
+                    <p style="margin: 0; font-family: ${fontStack}; font-size: 14px; line-height: 1.65; color: #6B6B6B;">${details ? details.replace(/\n/g, "<br/>") : "<span style='color: #B5B5B5;'>No additional details provided.</span>"}</p>
                   </td>
                 </tr>
 
                 <!-- CTA -->
                 <tr>
-                  <td style="padding: 24px 40px 8px 40px;">
+                  <td style="padding: 28px 40px 0 40px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
-                        <td align="center" bgcolor="#141310" style="border-radius: 50px;">
-                          <a href="mailto:${email}" target="_blank" style="display: block; padding: 15px 24px; font-family: ${fontStack}; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #F6F3EC; text-decoration: none; border-radius: 50px;">
-                            Reply to ${firstName} &rarr;
+                        <td align="center" bgcolor="#1A1A1A" style="border-radius: 8px;">
+                          <a href="mailto:${email}" target="_blank" style="display: block; padding: 14px 24px; font-family: ${fontStack}; font-size: 14px; font-weight: 600; color: #FFFFFF; text-decoration: none; border-radius: 8px;">
+                            Reply to ${firstName}
                           </a>
                         </td>
                       </tr>
@@ -471,11 +373,9 @@ export async function POST(request: Request) {
 
                 <!-- FOOTER -->
                 <tr>
-                  <td style="padding: 30px 40px 36px 40px;">
-                    <div style="border-top: 1px solid #ECE7DC; padding-top: 22px; text-align: center;">
-                      <p style="margin: 0; font-family: ${monoStack}; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #A8A498;">
-                        Ommi Media &middot; Automated Leads Engine
-                      </p>
+                  <td style="padding: 32px 40px 32px 40px;">
+                    <div style="border-top: 1px solid #EDEDEB; padding-top: 20px;">
+                      <p style="margin: 0; font-family: ${fontStack}; font-size: 12px; color: #B5B5B5;">Ommi Media &middot; Automated notification</p>
                     </div>
                   </td>
                 </tr>
